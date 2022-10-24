@@ -35,3 +35,10 @@ def creating_url(request_name):
             image_link = 'https:' + image.get('src')
             print(image_link)
             yield (image_link)  # итератор
+
+def download_image(image_link, image_name, folder_name):
+    response = requests.get(image_link, headers=header).content
+    file_name = open(os.path.join(os.path.join('dataset', folder_name), f"{image_name}.jpg"), 'wb')
+    with file_name as handler:
+        handler.write(response)
+
