@@ -1,4 +1,5 @@
 import os
+from time import sleep
 from bs4 import BeautifulSoup
 import requests
 import time
@@ -42,3 +43,11 @@ def download_image(image_link, image_name, folder_name):
     with file_name as handler:
         handler.write(response)
 
+def run(animal_name):
+    count = 0
+    creating_folder(animal_name)
+    for url in creating_url(animal_name):
+        download_image(url, str(count).zfill(4), animal_name)
+        count += 1
+        sleep(2)
+        print(count, ' downloaded')
