@@ -2,7 +2,9 @@ import os
 from time import sleep
 from bs4 import BeautifulSoup
 import requests
-
+import cv2
+import numpy as np
+import os.path
 import lxml
 
 header = {
@@ -24,7 +26,7 @@ def creating_folder(folder_name):
         os.mkdir(os.path.join('dataset',folder_name))
 
 def creating_url(request_name):
-    for page_number in range(1,35):
+    for page_number in range(1,3):
         print(page_number, "page")
         request_name.replace('','%20')
         link = f'https://yandex.ru/images/search?text={request_name}&p={page_number}'
@@ -51,3 +53,28 @@ def run(animal_name):
         count += 1
         sleep(2)
         print(count, ' downloaded')
+
+def cmp(image_1: cv2.Mat, image_2: cv2.Mat) -> bool:
+    dsize = (400, 400)
+    test_1 = cv2.resize(image_1, dsize)
+    test_2 = cv2.resize(image_2, dsize)
+    return test_1 == test_2
+def remove_duplicate(path_dir):
+    if os.path.isdir(f'dataset/{path_dir}'):
+        path = f'dataset/{path_dir}'
+        names = os.listdir(path)
+        i, j = 0, 0
+        length_names = len(names)
+        while i < length_names:
+            j = i
+            while j < length_names:
+                img_1 = cv2.imread(f'{path}/{names[i]}')
+                img_2 = cv2.imread(f'{path}/{names[j]}')
+                if np.all(cmp(img_1, img_2) == True) and i != j:
+                    print("DUblicate: ", names[i], " and ", names[j])
+                    os.remove(f'{path}/{names[j]}')
+                j += 1
+            print(names[i])
+            names = os.listdir(path)
+            length_names = len(names)
+            i += 1
